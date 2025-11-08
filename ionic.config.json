@@ -1,7 +1,0 @@
-{
-  "name": "agenda",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular-standalone"
-}
