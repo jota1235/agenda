@@ -1,0 +1,271 @@
+Requerimientos de la app Android (Ionic + Angular)
+1) Alcance y objetivo
+●	App móvil para clientes finales de cada empresa registrada en SyServ.
+
+●	Permite iniciar sesión, consultar la agenda y crear/editar/cancelar citas.
+
+●	Offline-first: descarga y mantiene en local los catálogos y la agenda para seguir operando sin internet.
+
+●	Sincronización automática en ambos sentidos cuando vuelve la conectividad.
+
+2) Tipos de usuario y multi-empresa (tenant)
+●	Usuario final (cliente) autenticado.
+
+●	Cada usuario pertenece a una empresa (tenant). La app debe:
+
+○	Identificar el tenant tras login (por dominio, código de empresa, o metadato en el token).
+
+○	Aislar datos locales por empresa (prefijo de BD o namespace por tenant).
+
+3) Autenticación
+●	Flujo: usuario + password.
+
+●	Token: recibir access_token (JWT).
+
+●	Persistencia segura del token en el dispositivo.
+
+●	Renovación silenciosa del token y logout si vence/refresh falla.
+
+●	Endpoints mínimos backend:
+
+○	POST /api/auth/login
+
+○	POST /api/auth/refresh
+
+○	POST /api/auth/logout
+
+4) Catálogos a descargar (primer arranque y posteriores)
+Descargar y mantener en local, segmentados por empresa:
+●	Sucursales (handel), servicios, duraciones/espacios, personal (agenda/atención), horarios y bloqueos, estatus de cita, motivos de cancelación, formas de pago si aplica, configuraciones de agenda (incrementos, ventana de reserva, límites).
+
+●	Agenda (citas) del rango visible (p. ej., -2 semanas a +6 semanas).
+
+●	Endpoints recomendados (con soporte de deltas):
+
+○	GET /api/catalogs?since=timestamp
+
+○	GET /api/agenda?from=YYYY-MM-DD&to=YYYY-MM-DD&since=timestamp
+
+●	Cada payload debe incluir updated_at y deleted (borrado lógico) para aplicar deltas.
+
+5) Almacenamiento local
+●	SQLite (capacitor-community/sqlite) como capa principal; Ionic Storage como fallback para claves simples.
+
+●	Tablas locales sugeridas:
+
+○	companies, branches, services, staff, status, cancel_reasons, settings
+
+○	appointments (agenda)
+
+○	outbox (cola de operaciones pendientes de subir)
+
+○	sync_state (marcas last_full_sync, last_delta_sync por recurso y empresa)
+
+●	Namespacing por tenant (columna company_id en todas las tablas o BD separada por empresa).
+
+6) UI/UX de la agenda
+●	Vistas: Día y Semana (scroll horizontal), con selector de sucursal y filtros (servicio, personal, estatus).
+
+●	Indicadores de conectividad (online/offline), de datos desincronizados y conflictos.
+
+●	Botones claros para nueva cita, editar, cancelar.
+
+●	Validaciones en tiempo real (duración, solapamiento, horarios del staff, límites por tenant).
+
+7) Operativa offline
+●	La app debe permitir crear/editar/cancelar citas sin internet:
+
+○	Generar UUID v4 local para nuevas citas (id_local) y almacenarlas en appointments con sync_status = 'pending'.
+
+○	Registrar cada acción en outbox como eventos idempotentes:
+
+■	CREATE_APPOINTMENT, UPDATE_APPOINTMENT, CANCEL_APPOINTMENT.
+
+■	Payload mínimo: uuid_local, provisional_id si aplica, company_id, payload, hash/etag, timestamp.
+
+●	Lectura de la agenda siempre desde SQLite.
+
+●	Reglas locales de validación replican las del backend (duración mínima, turnos, límites de anticipación); si algo no puede validarse sin servidor, se marca como “pendiente de validación” y se advierte al usuario.
+
+
+8) Sincronización bidireccional
+●	Detección de conectividad: Network API de Capacitor + reintentos exponenciales.
+
+●	Pull (descarga de deltas):
+
+○	Catálogos y agenda con since=last_delta_sync.
+
+○	Aplicar upserts y borrados lógicos según deleted y updated_at.
+
+●	Push (subida de outbox):
+
+○	Procesar en orden FIFO; cada operación incluye cabecera Idempotency-Key: uuid_operacion.
+
+○	Backend debe responder con el ID definitivo de la cita y su updated_at; la app reconcilia uuid_local → id_servidor.
+
+●	Conflictos:
+
+○	Identificación: comparar updated_at/version del servidor vs version_local.
+
+○	Política por defecto: Servidor Gana en colisiones de edición; si la edición local es más reciente y el servidor cambió el mismo campo, marcar conflicto y mostrar UI para resolver (mantener cambios locales → reintentar como UPDATE).
+
+○	Cancelaciones: si servidor marca cancelada y local marca editada, prevalece cancelación y se notifica al usuario.
+
+●	Rangos:
+
+○	Pull de agenda por ventanas (p. ej. semanas) para no saturar.
+
+○	Marcar ventanas con last_window_sync[from,to] para obtener solo lo nuevo.
+
+●	Triggers de sincronización:
+
+○	Al recuperar conexión.
+
+○	Al abrir la app si pasaron > N minutos desde la última sync.
+
+○	Al crear/editar/cancelar una cita (push inmediato si online).
+
+○	Manual: botón “Sincronizar ahora”.
+
+9) Contrato de datos (json de ejemplo)
+Cita (appointment)
+{
+  "id": 2487712,
+  "uuid_local": "d5e0c2f0-8a4f-4a93-9b53-2d1c0c9f9c1b",
+  "company_id": 14,
+  "branch_id": 3,
+  "service_id": 64178,
+  "staff_id": 112,
+  "client_id": 55631,
+  "date": "2025-11-05",
+  "start_time": "15:30",
+  "end_time": "16:15",
+  "status": "Confirmada",
+  "notes": "Primera vez",
+  "updated_at": "2025-11-05T15:42:11Z",
+  "deleted": false,
+  "version": 7
+}
+
+Delta de catálogos
+{
+  "since": "2025-11-04T00:00:00Z",
+  "services": [
+    {"id": 64178, "name": "Corte caballero", "duration_min": 45, "updated_at": "2025-11-05T10:00:00Z", "deleted": false}
+  ],
+  "staff": [
+    {"id":112,"name":"Dante","active":true,"updated_at":"2025-11-05T09:40:00Z","deleted":false}
+  ]
+}
+
+Outbox (operación local)
+{
+  "op_id": "7a7c7f39-5c1d-4116-8f6d-0e5c7b1d8c9a",
+  "type": "CREATE_APPOINTMENT",
+  "company_id": 14,
+  "payload": { /* cita como arriba (con uuid_local, sin id) */ },
+  "created_at": "2025-11-05T16:05:11Z",
+  "attempts": 0,
+  "status": "pending",
+  "last_error": null
+}
+
+10) Endpoints mínimos del backend (PHP)
+●	GET /api/catalogs?since=ISO8601
+
+●	GET /api/agenda?from=YYYY-MM-DD&to=YYYY-MM-DD&since=ISO8601
+
+●	POST /api/appointments (idempotente; Idempotency-Key)
+
+●	PUT /api/appointments/{id}
+
+●	DELETE /api/appointments/{id} (o POST /api/appointments/{id}/cancel)
+
+●	Todos multi-tenant (token incluye company_id o header X-Company-Id validado).
+
+Sugerencias backend para robustez
+●	Campos version (entero autoincremental por fila) y updated_at (UTC).
+
+●	ETag por recurso; If-Match en updates para detectar conflictos.
+
+●	Soft delete (deleted=1, deleted_at) para propagar bajas.
+
+●	Idempotencia: tabla idempotency_keys con TTL para aceptar reintentos seguros.
+
+
+11) Validaciones esenciales (lado app y servidor)
+●	Disponibilidad de staff y sala (si aplica) en el rango solicitado.
+
+●	Duración conforme al servicio y a minutos_incremento del tenant.
+
+●	Ventana mínima/máxima de anticipación por configuración.
+
+●	Solapamientos: no permitir superposición de citas del mismo staff.
+
+●	Reglas de status (p. ej., no “Confirmado” si falta dato obligatorio).
+
+12) Experiencia de errores y conflictos
+●	Toast/modal con resumen y opción “Ver detalles”.
+
+●	Registro local en logs para diagnóstico (enviar con consentimiento).
+
+●	En conflictos: mostrar diferencias de campos y resolver (mantener servidor o volver a aplicar cambios).
+
+13) Notificaciones (opcional pero recomendado)
+●	FCM: push para avisar cambios de agenda del servidor (crear/editar/cancelar).
+
+●	Al recibir push, la app dispara delta-pull de la ventana afectada.
+
+14) Rendimiento y datos
+●	Compresión HTTP (gzip/br).
+
+●	Paginación en agenda (por semana/día).
+
+●	Lazy loading y virtual scroll en listas.
+
+●	Límite de rango inicial descargado (p. ej. 6–8 semanas).
+
+●	Cache busting: usar since por recurso y ETags.
+
+
+15) Seguridad
+●	Solo HTTPS, verificación de pinning opcional.
+
+●	Tokens en almacenamiento seguro.
+
+●	Evitar datos sensibles en logs.
+
+●	Respetar scopes de token (solo tenant del usuario).
+
+16) Telemetría y soporte
+●	Evento “sync_completed”, “sync_failed”, “conflict_detected”, tiempos de sync, nº de operaciones, tamaño de payload.
+
+●	Pantalla “Estado de sincronización” con última sync, cola pendiente y errores.
+
+17) Testing y QA
+●	Modo avión + batch de operaciones → reconexión → verificación de consistencia.
+
+●	Pruebas de conflictos (editar misma cita en servidor y app).
+
+●	Idempotencia (reintentos en mala red).
+
+●	Datos de regresión: tenants distintos, horarios especiales, bloqueos, cambios en incrementos de agenda.
+
+18) Entregables
+●	App Ionic + Angular con:
+
+○	Módulo Auth, Módulo Sync, Módulo Agenda, Módulo Catálogos.
+
+○	Servicio de Conectividad, Servicio Outbox, Servicio DeltaPull.
+
+○	SQLite schema (scripts de migración).
+
+○	Pantallas: Login, Selector de Sucursal, Agenda (día/semana), Crear/Editar Cita, Estado de Sync, Configuración.
+
+●	Archivo de configuración por entorno (dev/stage/prod).
+
+●	Documento de mapeo de endpoints (campos requeridos y códigos de error).
+
+●	Lista de casos de prueba y criterios de aceptación.
+
+

@@ -1,0 +1,110 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-container">
+
+    <!-- Logo y título -->
+    <div class="login-header">
+      <div class="logo-container">
+        <div class="logo-s">S</div>
+      </div>
+      <h1 class="login-title">Bienvenido</h1>
+      <p class="login-subtitle">Inicia sesión para continuar</p>
+    </div>
+
+    <!-- Formulario de login -->
+    <form class="login-form" (ngSubmit)="login()">
+
+      <!-- Email input -->
+      <div class="form-group">
+        <label class="form-label">Email o Usuario</label>
+        <ion-input
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="tu@email.com"
+          class="custom-input"
+          [disabled]="isLoading"
+        ></ion-input>
+      </div>
+
+      <!-- Password input -->
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <div class="password-wrapper">
+          <ion-input
+            [type]="showPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="••••••••"
+            class="custom-input"
+            [disabled]="isLoading"
+          ></ion-input>
+          <ion-icon
+            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+          ></ion-icon>
+        </div>
+      </div>
+
+      <!-- Mensaje de error -->
+      <ion-text color="danger" *ngIf="errorMessage" class="error-message">
+        <p>{{ errorMessage }}</p>
+      </ion-text>
+
+      <!-- Botón de login -->
+      <ion-button
+        expand="block"
+        type="submit"
+        class="login-button"
+        [disabled]="!isFormValid() || isLoading"
+      >
+        <ion-spinner name="crescent" *ngIf="isLoading"></ion-spinner>
+        <span *ngIf="!isLoading">Iniciar Sesión</span>
+      </ion-button>
+
+    </form>
+
+    <!-- Divider -->
+    <div class="divider">
+      <span class="divider-text">O continúa con</span>
+    </div>
+
+    <!-- Botones de redes sociales -->
+    <div class="social-buttons">
+
+      <!-- Google -->
+      <ion-button
+        expand="block"
+        fill="outline"
+        class="btn-social"
+        (click)="loginWithGoogle()"
+        [disabled]="isLoading"
+      >
+        <ion-icon slot="start" name="logo-google"></ion-icon>
+        Google
+      </ion-button>
+
+      <!-- Microsoft -->
+      <ion-button
+        expand="block"
+        fill="outline"
+        class="btn-social"
+        (click)="loginWithMicrosoft()"
+        [disabled]="isLoading"
+      >
+        <ion-icon slot="start" name="logo-microsoft"></ion-icon>
+        Microsoft
+      </ion-button>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <p class="footer-text">
+        ¿Olvidaste tu contraseña?
+        <a href="#" class="footer-link">Recuperar</a>
+      </p>
+    </div>
+
+  </div>
+</ion-content>

@@ -1,0 +1,149 @@
+<!-- Loading Screen -->
+<div class="loading-screen" *ngIf="isLoading">
+  <div class="loading-content">
+    <div class="loading-logo">
+      <div class="logo-s">S</div>
+    </div>
+    <h2 class="loading-text">Cargando agenda...</h2>
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+  </div>
+</div>
+
+<!-- Main Content -->
+<ion-content [fullscreen]="true" class="agenda-content" *ngIf="!isLoading" [class.show]="showContent">
+
+  <!-- Banner Superior -->
+  <div class="top-banner">
+    <p class="banner-text">¿Listo para organizar tu día?</p>
+    <ion-button size="small" color="dark" class="banner-button">
+      Empezar
+    </ion-button>
+  </div>
+
+  <!-- Header con Today y Notificaciones -->
+  <div class="agenda-header">
+    <div class="header-left">
+      <div class="notification-badge">
+        <ion-icon name="calendar-outline" class="calendar-icon"></ion-icon>
+        <ion-badge color="danger" *ngIf="notificationCount > 0">{{ notificationCount }}</ion-badge>
+      </div>
+      <div class="header-info">
+        <h2 class="header-title">
+          {{ currentDay }}
+          <ion-icon name="ellipsisVerticalOutline" class="dropdown-icon"></ion-icon>
+        </h2>
+        <p class="header-hours">{{ currentHours }}</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <ion-button fill="clear" (click)="openNotifications()">
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" (click)="openOptions()">
+        <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Calendario Semanal -->
+  <div class="week-calendar">
+    <div
+      class="day-item"
+      *ngFor="let day of weekDays"
+      [class.today]="day.isToday"
+      [class.selected]="day.isSelected"
+      (click)="selectDay(day)"
+    >
+      <span class="day-name">{{ day.day }}</span>
+      <span class="day-number">{{ day.date }}</span>
+    </div>
+  </div>
+
+  <!-- Timeline de Citas -->
+  <div class="timeline-container">
+    <div class="timeline-content">
+
+      <!-- Líneas de hora -->
+      <div class="time-slot" *ngFor="let slot of timeSlots; let i = index">
+        <div class="time-label">
+          <span class="hour">{{ slot.hour.split(' ')[0] }}</span>
+          <span class="period">{{ slot.hour.split(' ')[1] }}</span>
+        </div>
+
+        <div class="time-grid">
+          <!-- Slots de 15 minutos -->
+          <div
+            class="grid-slot"
+            *ngFor="let gridSlot of slot.slots"
+            [class.has-appointment]="!gridSlot.isEmpty"
+          >
+            <!-- Cita (si existe) -->
+            <div class="appointment-card" *ngIf="!gridSlot.isEmpty && gridSlot.appointment">
+              <div class="appointment-time">{{ slot.hour.split(' ')[0] }}:{{ gridSlot.time }}</div>
+              <div class="appointment-client">{{ gridSlot.appointment.clientName }}</div>
+              <div class="appointment-service">{{ gridSlot.appointment.service }}</div>
+              <div class="appointment-duration">{{ gridSlot.appointment.duration }} min</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FAB para nueva cita -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-main">
+    <ion-fab-button color="dark" (click)="createAppointment()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-navigation">
+    <div
+      class="nav-item"
+      [class.active]="activeTab === 'appointments'"
+      (click)="changeTab('appointments')"
+    >
+      <ion-icon name="calendar-outline"></ion-icon>
+      <span class="nav-label">Citas</span>
+    </div>
+
+    <div
+      class="nav-item"
+      [class.active]="activeTab === 'clients'"
+      (click)="changeTab('clients')"
+    >
+      <ion-icon name="people-outline"></ion-icon>
+      <span class="nav-label">Clientes</span>
+    </div>
+
+    <div
+      class="nav-item"
+      [class.active]="activeTab === 'reports'"
+      (click)="changeTab('reports')"
+    >
+      <ion-icon name="document-text-outline"></ion-icon>
+      <span class="nav-label">Reportes</span>
+    </div>
+
+    <div
+      class="nav-item"
+      [class.active]="activeTab === 'marketing'"
+      (click)="changeTab('marketing')"
+    >
+      <ion-icon name="megaphone-outline"></ion-icon>
+      <span class="nav-label">Marketing</span>
+    </div>
+
+    <div
+      class="nav-item"
+      [class.active]="activeTab === 'business'"
+      (click)="changeTab('business')"
+    >
+      <ion-icon name="storefront-outline"></ion-icon>
+      <span class="nav-label">Negocio</span>
+    </div>
+  </div>
+
+</ion-content>

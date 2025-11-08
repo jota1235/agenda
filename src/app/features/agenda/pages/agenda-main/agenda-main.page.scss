@@ -1,0 +1,573 @@
+// ============================================
+// LOADING SCREEN
+// ============================================
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #0EA5E9 0%, #3B82F6 50%, #7DD3FC 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-logo {
+  margin-bottom: 1.5rem;
+  animation: bounceIn 0.8s ease-out;
+}
+
+.loading-logo .logo-s {
+  font-size: 4rem;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.loading-text {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+}
+
+.loading-screen ion-spinner {
+  --color: white;
+  animation: fadeIn 0.6s ease-out 0.6s both;
+}
+
+// ============================================
+// MAIN CONTENT
+// ============================================
+.agenda-content {
+  --background: #F8FAFC;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ============================================
+// TOP BANNER
+// ============================================
+.top-banner {
+  background: linear-gradient(135deg, #A78BFA 0%, #7DD3FC 100%);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0 0 16px 16px;
+  margin-bottom: 1rem;
+  animation: slideDown 0.6s ease-out 0.2s both;
+}
+
+.banner-text {
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.banner-button {
+  --border-radius: 8px;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  height: auto;
+}
+
+// ============================================
+// HEADER
+// ============================================
+.agenda-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem 1rem;
+  animation: slideDown 0.6s ease-out 0.3s both;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.notification-badge {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.calendar-icon {
+  font-size: 1.5rem;
+  color: var(--ion-color-dark);
+}
+
+.notification-badge ion-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.header-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dropdown-icon {
+  font-size: 1.25rem;
+  color: var(--ion-color-medium);
+}
+
+.header-hours {
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.header-right ion-button {
+  --padding-start: 0.5rem;
+  --padding-end: 0.5rem;
+}
+
+.header-right ion-icon {
+  font-size: 1.5rem;
+  color: var(--ion-color-dark);
+}
+
+// ============================================
+// WEEK CALENDAR
+// ============================================
+.week-calendar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1.25rem 1rem;
+  overflow-x: auto;
+  animation: slideUp 0.6s ease-out 0.4s both;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.day-item {
+  flex-shrink: 0;
+  width: 48px;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  background: white;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  &.today {
+    background: #FEE2E2;
+    border: 2px solid #EF4444;
+  }
+
+  &.selected {
+    background: var(--ion-color-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+
+    .day-name,
+    .day-number {
+      color: white;
+    }
+  }
+}
+
+.day-name {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.day-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+}
+
+// ============================================
+// TIMELINE
+// ============================================
+.timeline-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 1.25rem 6rem;
+  animation: fadeIn 0.6s ease-out 0.5s both;
+}
+
+.timeline-content {
+  background: white;
+  border-radius: 16px;
+  padding: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.time-slot {
+  display: flex;
+  border-bottom: 1px solid #F1F5F9;
+  min-height: 260px;
+  animation: slideUp 0.4s ease-out both;
+
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.15s; }
+  &:nth-child(3) { animation-delay: 0.2s; }
+  &:nth-child(4) { animation-delay: 0.25s; }
+  &:nth-child(5) { animation-delay: 0.3s; }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.time-label {
+  width: 80px;
+  padding: 1rem 0 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+
+.hour {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.period {
+  font-size: 0.9375rem;
+  color: var(--ion-color-medium);
+}
+
+.time-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-slot {
+  flex: 1;
+  min-height: 65px;
+  border-bottom: 1px solid #F8FAFC;
+  position: relative;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #F8FAFC;
+  }
+
+  &:last-child {
+    border-bottom: 1px solid #F1F5F9;
+  }
+
+  &.has-appointment {
+    background: transparent;
+    border-bottom: none;
+
+    &:hover {
+      background: transparent;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+// ============================================
+// APPOINTMENT CARD
+// ============================================
+.appointment-card {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  border-radius: 16px;
+  padding: 2rem 1.75rem;
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: scaleIn 0.4s ease-out;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+  }
+}
+
+.appointment-time {
+  font-size: 1.125rem;
+  font-weight: 600;
+  opacity: 0.95;
+  margin-bottom: 0;
+  letter-spacing: 0.02em;
+}
+
+.appointment-client {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0;
+  line-height: 1.3;
+}
+
+.appointment-service {
+  font-size: 1.25rem;
+  opacity: 0.95;
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+.appointment-duration {
+  font-size: 1.125rem;
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+
+  &::before {
+    content: '⏱';
+    font-size: 1.25rem;
+  }
+}
+
+// ============================================
+// FAB
+// ============================================
+.fab-main {
+  margin-bottom: 5rem;
+  margin-right: 1rem;
+  animation: scaleIn 0.6s ease-out 0.8s both;
+}
+
+.fab-main ion-fab-button {
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: scale(1.1) rotate(90deg);
+  }
+}
+
+// ============================================
+// BOTTOM NAVIGATION
+// ============================================
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: var(--ion-color-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0.5rem 0;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  animation: slideUp 0.6s ease-out 0.6s both;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  min-width: 60px;
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.3s ease;
+  }
+
+  &:hover ion-icon {
+    color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    ion-icon {
+      color: white;
+    }
+
+    .nav-label {
+      color: white;
+      font-weight: 600;
+    }
+  }
+}
+
+.nav-label {
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+// ============================================
+// ANIMATIONS
+// ============================================
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+@media (max-width: 375px) {
+  .day-item {
+    width: 44px;
+    height: 56px;
+  }
+
+  .time-label {
+    width: 55px;
+    padding-left: 0.5rem;
+  }
+
+  .hour {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .timeline-container {
+    padding: 0 2rem 6rem;
+  }
+
+  .week-calendar {
+    padding: 0 2rem 1rem;
+  }
+
+  .agenda-header {
+    padding: 0 2rem 1rem;
+  }
+}

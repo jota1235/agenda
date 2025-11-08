@@ -1,0 +1,88 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Menú Principal</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="menu-content">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="menu-container">
+
+    <!-- Header de bienvenida -->
+    <div class="welcome-header">
+      <h1 class="welcome-title">¡Bienvenido!</h1>
+      <p class="welcome-subtitle">Gestiona tu agenda de forma eficiente</p>
+    </div>
+
+    <!-- Grid de opciones -->
+    <div class="menu-grid">
+
+      <!-- Agenda -->
+      <ion-card class="menu-card" (click)="goToAgenda()" button>
+        <ion-card-header>
+          <div class="card-icon primary">
+            <ion-icon name="calendar-outline"></ion-icon>
+          </div>
+          <ion-card-title>Agenda</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Ver y gestionar citas
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Perfil -->
+      <ion-card class="menu-card" (click)="goToProfile()" button>
+        <ion-card-header>
+          <div class="card-icon secondary">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <ion-card-title>Perfil</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Información personal
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Configuración -->
+      <ion-card class="menu-card" (click)="goToSettings()" button>
+        <ion-card-header>
+          <div class="card-icon tertiary">
+            <ion-icon name="settings-outline"></ion-icon>
+          </div>
+          <ion-card-title>Configuración</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Ajustes de la app
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+    <!-- Botón de cerrar sesión -->
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="danger"
+      class="logout-button"
+      (click)="logout()"
+    >
+      <ion-icon slot="start" name="log-out-outline"></ion-icon>
+      Cerrar Sesión
+    </ion-button>
+
+    <!-- Info temporal -->
+    <div class="temp-info">
+      <p class="info-text">
+        Esta es una pantalla temporal de menú.
+        <br>
+        Próximamente se implementará la agenda completa.
+      </p>
+    </div>
+
+  </div>
+</ion-content>
