@@ -8,7 +8,9 @@ import { AppComponent } from './app/app.component';
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular(),
+    provideIonicAngular({
+      animated: true  // Detectar automáticamente iOS o Android según el dispositivo
+    }),
     provideRouter(routes, withPreloading(PreloadAllModules)),
   ],
 });
