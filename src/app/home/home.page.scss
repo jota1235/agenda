@@ -202,6 +202,8 @@
 // ============================================
 // RESPONSIVE
 // ============================================
+
+// Móviles pequeños
 @media (max-width: 575px) {
   .welcome-header {
     padding: 1.5rem 0;
@@ -213,6 +215,212 @@
 
   .menu-container {
     padding: 1rem;
+  }
+}
+
+// Tablets en modo portrait (768px - 1023px)
+@media (min-width: 768px) and (max-width: 1023px) {
+  .menu-container {
+    padding: 2.5rem 3rem;
+    max-width: 900px;
+  }
+
+  .welcome-header {
+    padding: 3rem 0;
+  }
+
+  .welcome-title {
+    font-size: 2.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .welcome-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+    margin-bottom: 3rem;
+  }
+
+  .menu-card {
+    border-radius: 20px;
+    min-height: 220px;
+
+    &:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+    }
+  }
+
+  .menu-card ion-card-header {
+    padding: 2rem 1.5rem 1rem !important;
+  }
+
+  .menu-card ion-card-title {
+    font-size: 1.5rem;
+    margin-top: 1.75rem !important;
+  }
+
+  .menu-card ion-card-content {
+    font-size: 1.125rem;
+    padding: 1rem 1.5rem 2rem !important;
+  }
+
+  .card-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+
+    ion-icon {
+      font-size: 2.75rem;
+    }
+  }
+
+  .logout-button {
+    --padding-top: 1.25rem;
+    --padding-bottom: 1.25rem;
+    font-size: 1.125rem;
+    margin: 3rem 0 2rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+  }
+
+  .temp-info {
+    padding: 1.5rem;
+    border-radius: 16px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .info-text {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+}
+
+// Tablets en modo landscape y pantallas grandes (1024px+)
+@media (min-width: 1024px) {
+  .menu-container {
+    padding: 3rem 4rem;
+    max-width: 1400px;
+  }
+
+  .welcome-header {
+    padding: 4rem 0;
+  }
+
+  .welcome-title {
+    font-size: 3.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .welcome-subtitle {
+    font-size: 1.5rem;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  .menu-card {
+    border-radius: 24px;
+    min-height: 260px;
+
+    &:hover {
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .menu-card ion-card-header {
+    padding: 2.5rem 2rem 1rem !important;
+  }
+
+  .menu-card ion-card-title {
+    font-size: 1.75rem;
+    margin-top: 2rem !important;
+  }
+
+  .menu-card ion-card-content {
+    font-size: 1.25rem;
+    padding: 1.25rem 2rem 2.5rem !important;
+  }
+
+  .card-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 18px;
+
+    ion-icon {
+      font-size: 3.25rem;
+    }
+  }
+
+  .logout-button {
+    --padding-top: 1.5rem;
+    --padding-bottom: 1.5rem;
+    font-size: 1.25rem;
+    margin: 4rem 0 2.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+
+    ion-icon {
+      font-size: 1.75rem;
+    }
+  }
+
+  .temp-info {
+    padding: 2rem;
+    border-radius: 20px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .info-text {
+    font-size: 1.125rem;
+    line-height: 2;
+  }
+}
+
+// Pantallas extra grandes (1440px+)
+@media (min-width: 1440px) {
+  .menu-container {
+    max-width: 1600px;
+  }
+
+  .menu-grid {
+    gap: 2.5rem;
+  }
+
+  .menu-card {
+    min-height: 280px;
+  }
+}
+
+// Orientación landscape para tablets
+@media (orientation: landscape) and (min-width: 768px) and (max-width: 1024px) {
+  .welcome-header {
+    padding: 2rem 0;
+  }
+
+  .welcome-title {
+    font-size: 2.5rem;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 

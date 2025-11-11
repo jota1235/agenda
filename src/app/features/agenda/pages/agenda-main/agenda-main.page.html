@@ -45,17 +45,19 @@
     </div>
   </div>
 
-  <!-- Calendario Semanal (solo en appointments) -->
-  <div class="week-calendar" *ngIf="activeTab === 'appointments'">
-    <div
-      class="day-item"
-      *ngFor="let day of weekDays"
-      [class.today]="day.isToday"
-      [class.selected]="day.isSelected"
-      (click)="selectDay(day)"
-    >
-      <span class="day-name">{{ day.day }}</span>
-      <span class="day-number">{{ day.date }}</span>
+  <!-- Carrusel de Días del Mes (solo en appointments) -->
+  <div class="month-carousel-container" *ngIf="activeTab === 'appointments'">
+    <div class="month-carousel">
+      <div
+        class="day-item"
+        *ngFor="let day of monthDays"
+        [class.today]="day.isToday"
+        [class.selected]="day.isSelected"
+        (click)="selectDay(day)"
+      >
+        <span class="day-name">{{ day.day }}</span>
+        <span class="day-number">{{ day.date }}</span>
+      </div>
     </div>
   </div>
 

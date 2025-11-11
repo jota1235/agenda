@@ -62,9 +62,12 @@ interface TimeSlot {
 interface DayOption {
   day: string;
   date: number;
+  month: number;
+  year: number;
   fullDate: Date;
   isToday: boolean;
   isSelected: boolean;
+  isCurrentMonth: boolean;
 }
 
 @Component({
@@ -107,8 +110,8 @@ export class AgendaMainPage implements OnInit {
   currentDay = 'Hoy';
   currentHours = '10:00 a.m. - 7:00 p.m.';
 
-  // Días de la semana (se generará dinámicamente en initializeAgenda)
-  weekDays: DayOption[] = [];
+  // Días del mes (se generará dinámicamente en initializeAgenda)
+  monthDays: DayOption[] = [];
 
   // Timeline de horas
   timeSlots: TimeSlot[] = [];
@@ -316,39 +319,61 @@ export class AgendaMainPage implements OnInit {
       this.currentDay = `${dayNames[date.getDay()]}, ${date.getDate()} de ${monthNames[date.getMonth()]}`;
     }
 
-    // Actualizar el selector semanal para mostrar la semana de la fecha seleccionada
-    this.updateWeekSelector(date);
+    // Actualizar el selector de días del mes
+    this.updateMonthSelector(date);
 
     // TODO: Cargar citas del día seleccionado desde la base de datos
     console.log('Cargando citas para:', date);
   }
 
   /**
-   * Actualizar el selector semanal
+   * Actualizar el selector de días del mes (carrusel)
    */
-  updateWeekSelector(date: Date) {
+  updateMonthSelector(date: Date) {
     const today = new Date();
-    const dayOfWeek = date.getDay(); // 0 = Domingo, 6 = Sábado
-    const currentDate = date.getDate();
+    const selectedMonth = date.getMonth();
+    const selectedYear = date.getFullYear();
 
-    // Calcular el domingo de la semana
-    const startOfWeek = new Date(date);
-    startOfWeek.setDate(currentDate - dayOfWeek);
-
-    // Generar los 7 días de la semana
-    this.weekDays = [];
+    // Generar todos los días del mes
+    this.monthDays = [];
     const dayAbbreviations = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
 
-    for (let i = 0; i < 7; i++) {
-      const weekDay = new Date(startOfWeek);
-      weekDay.setDate(startOfWeek.getDate() + i);
+    // Obtener el número de días del mes
+    const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
 
-      this.weekDays.push({
-        day: dayAbbreviations[i],
-        date: weekDay.getDate(),
-        fullDate: new Date(weekDay), // Incluir fecha completa
-        isToday: this.isSameDay(weekDay, today),
-        isSelected: this.isSameDay(weekDay, date)
+    // Generar cada día del mes
+    for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
+      const dayDate = new Date(selectedYear, selectedMonth, dayNum);
+      const dayOfWeek = dayDate.getDay();
+
+      this.monthDays.push({
+        day: dayAbbreviations[dayOfWeek],
+        date: dayNum,
+        month: selectedMonth,
+        year: selectedYear,
+        fullDate: new Date(dayDate),
+        isToday: this.isSameDay(dayDate, today),
+        isSelected: this.isSameDay(dayDate, date),
+        isCurrentMonth: true
+      });
+    }
+
+    // Scroll automático al día seleccionado después de renderizar
+    setTimeout(() => {
+      this.scrollToSelectedDay();
+    }, 100);
+  }
+
+  /**
+   * Hacer scroll automático al día seleccionado
+   */
+  scrollToSelectedDay() {
+    const selectedElement = document.querySelector('.day-item.selected');
+    if (selectedElement) {
+      selectedElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
       });
     }
   }
