@@ -118,6 +118,18 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    background: #F9FAFB;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .calendar-icon {

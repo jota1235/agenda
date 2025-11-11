@@ -23,7 +23,7 @@
   <!-- Header con Today y Notificaciones (solo en appointments) -->
   <div class="agenda-header" *ngIf="activeTab === 'appointments'">
     <div class="header-left">
-      <div class="notification-badge">
+      <div class="notification-badge" (click)="openCalendar()">
         <ion-icon name="calendar-outline" class="calendar-icon"></ion-icon>
         <ion-badge color="danger" *ngIf="notificationCount > 0">{{ notificationCount }}</ion-badge>
       </div>

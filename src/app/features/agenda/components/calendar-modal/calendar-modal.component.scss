@@ -1,0 +1,458 @@
+// ============================================
+// HEADER DEL MODAL
+// ============================================
+ion-header {
+  ion-toolbar {
+    --background: #ffffff;
+    --color: #1F2937;
+    --border-width: 0 0 1px 0;
+    --border-color: #E5E7EB;
+  }
+}
+
+.calendar-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  color: #1F2937;
+}
+
+.nav-month-button {
+  --color: #3B82F6;
+  font-size: 1.5rem;
+
+  ion-icon {
+    font-size: 1.75rem;
+  }
+
+  &:hover {
+    --color: #2563EB;
+  }
+}
+
+.close-button {
+  --color: #6B7280;
+
+  ion-icon {
+    font-size: 1.5rem;
+  }
+
+  &:hover {
+    --color: #374151;
+  }
+}
+
+// ============================================
+// CONTENIDO DEL MODAL
+// ============================================
+.calendar-content {
+  --background: #F9FAFB;
+  --padding-top: 1rem;
+  --padding-bottom: 1rem;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+}
+
+// ============================================
+// BOTÓN "HOY"
+// ============================================
+.today-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.today-button {
+  --border-color: #3B82F6;
+  --color: #3B82F6;
+  --border-radius: 8px;
+  font-weight: 600;
+  text-transform: none;
+
+  &:hover {
+    --background: #EFF6FF;
+  }
+}
+
+// ============================================
+// GRID DEL CALENDARIO
+// ============================================
+.calendar-grid {
+  padding: 0;
+  animation: fadeIn 0.5s ease-out 0.1s both;
+}
+
+// Días de la semana (header)
+.weekdays-row {
+  margin-bottom: 0.75rem;
+  padding: 0;
+}
+
+.weekday-col {
+  padding: 0.5rem 0;
+  text-align: center;
+}
+
+.weekday-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #6B7280;
+  text-transform: uppercase;
+}
+
+// ============================================
+// FILAS DE SEMANAS
+// ============================================
+.calendar-week {
+  margin-bottom: 0.5rem;
+}
+
+// ============================================
+// CELDAS DE DÍAS
+// ============================================
+.calendar-day-col {
+  padding: 0.25rem;
+  aspect-ratio: 1;
+  position: relative;
+
+  .day-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    position: relative;
+    border: 2px solid transparent;
+  }
+
+  .day-number {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1F2937;
+    z-index: 2;
+  }
+
+  .appointment-indicator {
+    position: absolute;
+    bottom: 0.375rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #3B82F6;
+    }
+  }
+
+  // Días del mes anterior/siguiente (grises)
+  &.not-current-month {
+    .day-content {
+      background: transparent;
+      cursor: default;
+    }
+
+    .day-number {
+      color: #D1D5DB;
+      font-weight: 400;
+    }
+
+    &:hover .day-content {
+      background: transparent;
+      transform: none;
+    }
+  }
+
+  // Día actual (HOY)
+  &.is-today .day-content {
+    background: #3B82F6;
+    border-color: #3B82F6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+
+    .day-number {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .appointment-indicator .dot {
+      background: #ffffff;
+    }
+  }
+
+  // Día seleccionado
+  &.is-selected:not(.is-today) .day-content {
+    border-color: #3B82F6;
+    background: #EFF6FF;
+
+    .day-number {
+      color: #1E40AF;
+      font-weight: 700;
+    }
+  }
+
+  // Días con citas
+  &.has-appointments:not(.not-current-month) {
+    .day-content {
+      background: #F0F9FF;
+    }
+  }
+
+  // Hover effect (solo para días del mes actual)
+  &:not(.not-current-month):hover .day-content {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #F3F4F6;
+  }
+
+  // Hover sobre día actual
+  &.is-today:hover .day-content {
+    background: #2563EB;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+  }
+
+  // Hover sobre día seleccionado
+  &.is-selected:not(.is-today):hover .day-content {
+    background: #DBEAFE;
+  }
+}
+
+// ============================================
+// LEYENDA
+// ============================================
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.5s ease-out 0.2s both;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+
+  &.today-dot {
+    background: #3B82F6;
+  }
+
+  &.selected-dot {
+    background: #EFF6FF;
+    border: 2px solid #3B82F6;
+  }
+
+  &.appointment-dot {
+    background: #3B82F6;
+    width: 6px;
+    height: 6px;
+  }
+}
+
+.legend-text {
+  font-size: 0.875rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+// ============================================
+// ANIMACIONES
+// ============================================
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ============================================
+// MODO OSCURO
+// ============================================
+:host-context(body.dark) {
+  // Header
+  ion-header {
+    ion-toolbar {
+      --background: #1F2937;
+      --color: #F9FAFB;
+      --border-color: #374151;
+    }
+  }
+
+  .calendar-title {
+    color: #F9FAFB;
+  }
+
+  .nav-month-button {
+    --color: #60A5FA;
+
+    &:hover {
+      --color: #93C5FD;
+    }
+  }
+
+  .close-button {
+    --color: #9CA3AF;
+
+    &:hover {
+      --color: #D1D5DB;
+    }
+  }
+
+  // Contenido
+  .calendar-content {
+    --background: #111827;
+  }
+
+  // Botón "Hoy"
+  .today-button {
+    --border-color: #60A5FA;
+    --color: #60A5FA;
+
+    &:hover {
+      --background: #1E3A8A;
+    }
+  }
+
+  // Días de la semana
+  .weekday-label {
+    color: #9CA3AF;
+  }
+
+  // Celdas de días
+  .calendar-day-col {
+    .day-content {
+      background: #1F2937;
+    }
+
+    .day-number {
+      color: #F9FAFB;
+    }
+
+    .appointment-indicator .dot {
+      background: #60A5FA;
+    }
+
+    // Días del mes anterior/siguiente
+    &.not-current-month {
+      .day-content {
+        background: transparent;
+      }
+
+      .day-number {
+        color: #4B5563;
+      }
+    }
+
+    // Día actual (HOY)
+    &.is-today .day-content {
+      background: #3B82F6;
+      border-color: #3B82F6;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+
+      .day-number {
+        color: #ffffff;
+      }
+
+      .appointment-indicator .dot {
+        background: #ffffff;
+      }
+    }
+
+    // Día seleccionado
+    &.is-selected:not(.is-today) .day-content {
+      border-color: #60A5FA;
+      background: #1E3A8A;
+
+      .day-number {
+        color: #93C5FD;
+      }
+    }
+
+    // Días con citas
+    &.has-appointments:not(.not-current-month) {
+      .day-content {
+        background: #1E3A8A;
+      }
+    }
+
+    // Hover effect
+    &:not(.not-current-month):hover .day-content {
+      background: #374151;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    &.is-today:hover .day-content {
+      background: #2563EB;
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+    }
+
+    &.is-selected:not(.is-today):hover .day-content {
+      background: #1E40AF;
+    }
+  }
+
+  // Leyenda
+  .calendar-legend {
+    background: #1F2937;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .legend-text {
+    color: #9CA3AF;
+  }
+
+  .legend-dot {
+    &.today-dot {
+      background: #3B82F6;
+    }
+
+    &.selected-dot {
+      background: #1E3A8A;
+      border-color: #60A5FA;
+    }
+
+    &.appointment-dot {
+      background: #60A5FA;
+    }
+  }
+}
+
+// ============================================
+// RESPONSIVE (TABLETS Y MÓVILES GRANDES)
+// ============================================
+@media (min-width: 768px) {
+  .calendar-title {
+    font-size: 1.5rem;
+  }
+
+  .day-number {
+    font-size: 1.125rem;
+  }
+
+  .calendar-legend {
+    gap: 2rem;
+  }
+}

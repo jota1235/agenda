@@ -21,8 +21,10 @@ import {
   IonRow,
   IonCol,
   IonChip,
-  ActionSheetController
+  ActionSheetController,
+  ModalController
 } from '@ionic/angular/standalone';
+import { CalendarModalComponent, CalendarModalResult } from '../../components/calendar-modal/calendar-modal.component';
 import { addIcons } from 'ionicons';
 import {
   notificationsOutline,
@@ -60,6 +62,7 @@ interface TimeSlot {
 interface DayOption {
   day: string;
   date: number;
+  fullDate: Date;
   isToday: boolean;
   isSelected: boolean;
 }
@@ -104,16 +107,8 @@ export class AgendaMainPage implements OnInit {
   currentDay = 'Hoy';
   currentHours = '10:00 a.m. - 7:00 p.m.';
 
-  // Días de la semana
-  weekDays: DayOption[] = [
-    { day: 'DOM', date: 2, isToday: false, isSelected: false },
-    { day: 'LUN', date: 3, isToday: false, isSelected: false },
-    { day: 'MAR', date: 4, isToday: false, isSelected: false },
-    { day: 'MIÉ', date: 5, isToday: false, isSelected: false },
-    { day: 'JUE', date: 6, isToday: false, isSelected: false },
-    { day: 'VIE', date: 7, isToday: true, isSelected: true },
-    { day: 'SÁB', date: 8, isToday: false, isSelected: false }
-  ];
+  // Días de la semana (se generará dinámicamente en initializeAgenda)
+  weekDays: DayOption[] = [];
 
   // Timeline de horas
   timeSlots: TimeSlot[] = [];
@@ -159,9 +154,13 @@ export class AgendaMainPage implements OnInit {
     { name: 'Maquillaje', icon: 'brush-outline' }
   ];
 
+  // Fecha seleccionada actualmente
+  selectedDate: Date = new Date();
+
   constructor(
     private router: Router,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private modalController: ModalController
   ) {
     // Registrar iconos
     addIcons({
@@ -204,6 +203,10 @@ export class AgendaMainPage implements OnInit {
   async initializeAgenda() {
     // Simular carga de datos
     await this.delay(1500);
+
+    // Inicializar con la fecha actual (Hoy)
+    this.selectedDate = new Date();
+    this.updateViewForSelectedDate(this.selectedDate);
 
     // Generar timeline
     this.generateTimeSlots();
@@ -259,13 +262,104 @@ export class AgendaMainPage implements OnInit {
   }
 
   /**
-   * Seleccionar día
+   * Seleccionar día desde el selector semanal
    */
   selectDay(day: DayOption) {
-    this.weekDays.forEach(d => d.isSelected = false);
-    day.isSelected = true;
-    console.log('Día seleccionado:', day);
-    // TODO: Cargar citas del día seleccionado
+    // Actualizar la fecha seleccionada
+    this.selectedDate = new Date(day.fullDate);
+
+    // Actualizar la vista completa (título, selector semanal, etc.)
+    this.updateViewForSelectedDate(this.selectedDate);
+
+    console.log('Día seleccionado desde selector semanal:', this.selectedDate);
+  }
+
+  /**
+   * Abrir modal de calendario
+   */
+  async openCalendar() {
+    const modal = await this.modalController.create({
+      component: CalendarModalComponent,
+      cssClass: 'calendar-modal',
+      breakpoints: [0, 0.5, 0.75, 0.95],
+      initialBreakpoint: 0.95,
+      backdropDismiss: true
+    });
+
+    await modal.present();
+
+    // Esperar a que se cierre el modal
+    const { data, role } = await modal.onWillDismiss<CalendarModalResult>();
+
+    if (role === 'confirm' && data?.selectedDate) {
+      // Actualizar la fecha seleccionada
+      this.selectedDate = data.selectedDate;
+      this.updateViewForSelectedDate(data.selectedDate);
+      console.log('Fecha seleccionada desde calendario:', data.selectedDate);
+    }
+  }
+
+  /**
+   * Actualizar la vista según la fecha seleccionada
+   */
+  updateViewForSelectedDate(date: Date) {
+    // Actualizar el título del día
+    const today = new Date();
+    const isToday = this.isSameDay(date, today);
+
+    if (isToday) {
+      this.currentDay = 'Hoy';
+    } else {
+      const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      this.currentDay = `${dayNames[date.getDay()]}, ${date.getDate()} de ${monthNames[date.getMonth()]}`;
+    }
+
+    // Actualizar el selector semanal para mostrar la semana de la fecha seleccionada
+    this.updateWeekSelector(date);
+
+    // TODO: Cargar citas del día seleccionado desde la base de datos
+    console.log('Cargando citas para:', date);
+  }
+
+  /**
+   * Actualizar el selector semanal
+   */
+  updateWeekSelector(date: Date) {
+    const today = new Date();
+    const dayOfWeek = date.getDay(); // 0 = Domingo, 6 = Sábado
+    const currentDate = date.getDate();
+
+    // Calcular el domingo de la semana
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(currentDate - dayOfWeek);
+
+    // Generar los 7 días de la semana
+    this.weekDays = [];
+    const dayAbbreviations = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
+
+    for (let i = 0; i < 7; i++) {
+      const weekDay = new Date(startOfWeek);
+      weekDay.setDate(startOfWeek.getDate() + i);
+
+      this.weekDays.push({
+        day: dayAbbreviations[i],
+        date: weekDay.getDate(),
+        fullDate: new Date(weekDay), // Incluir fecha completa
+        isToday: this.isSameDay(weekDay, today),
+        isSelected: this.isSameDay(weekDay, date)
+      });
+    }
+  }
+
+  /**
+   * Verificar si dos fechas son el mismo día
+   */
+  isSameDay(date1: Date, date2: Date): boolean {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate();
   }
 
   /**

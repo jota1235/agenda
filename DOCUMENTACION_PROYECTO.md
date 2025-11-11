@@ -1,8 +1,8 @@
 # 📱 DOCUMENTACIÓN DEL PROYECTO - AGENDA OFFLINE SYSERV
 
-**Última actualización**: 2025-11-08
+**Última actualización**: 2025-11-10
 **Versión**: 0.0.1
-**Estado**: En Desarrollo - Fase de Diseño UI
+**Estado**: En Desarrollo - Fase de Diseño UI Completo
 
 ---
 
@@ -71,8 +71,8 @@ Esta app es un **complemento del sistema web SyServ existente**, no un reemplazo
 ## ✅ ESTADO ACTUAL DEL PROYECTO
 
 ### Resumen General
-**Progreso UI/Diseño**: 65%
-**Progreso Lógica de Negocio**: 10%
+**Progreso UI/Diseño**: 85%
+**Progreso Lógica de Negocio**: 15%
 **Progreso Integración APIs**: 0%
 **Progreso Sistema Offline**: 5%
 
@@ -94,6 +94,7 @@ Esta app es un **complemento del sistema web SyServ existente**, no un reemplazo
   - Botones OAuth (Google, Microsoft) - preparados
   - Toggle para mostrar/ocultar contraseña
   - Validaciones básicas de formulario
+  - **Modo claro forzado**: Siempre se muestra en modo claro independiente del tema global
   - **Pendiente**: Integración real con AuthService
 
 #### 3. ⚠️ Auth Service
@@ -127,8 +128,10 @@ Esta app es un **complemento del sistema web SyServ existente**, no un reemplazo
 - **Funcionalidad**:
   - Cards de navegación (Agenda, Perfil, Configuración)
   - Botón de cerrar sesión
-  - Animaciones de entrada
-  - Navegación funcional a Agenda
+  - Animaciones de entrada con delays secuenciales
+  - Navegación funcional a Agenda, Perfil y Configuración
+  - Soporte completo de modo oscuro
+  - Espaciado optimizado entre iconos y texto (1.5rem margin-top)
 
 #### 5. ✅ Vista Principal de Agenda
 - **Archivo**: `src/app/features/agenda/pages/agenda-main/`
@@ -142,6 +145,7 @@ Esta app es un **complemento del sistema web SyServ existente**, no un reemplazo
     - Servicio
     - Duración
   - **Bottom Navigation**: 5 tabs (Citas, Clientes, Reportes, Marketing, Negocio)
+    - Tab "Negocio" muestra perfil del negocio integrado
   - **FAB**: Botón flotante para nueva cita
   - **Menú de opciones**: ActionSheet con:
     - Volver al Menú
@@ -149,6 +153,7 @@ Esta app es un **complemento del sistema web SyServ existente**, no un reemplazo
     - Ayuda
     - Cancelar
   - **Loading Screen**: Animación de carga inicial
+  - **Soporte completo de modo oscuro** con estilos optimizados
 
 **Ajustes Visuales Realizados**:
 - Altura de slot de tiempo: 260px (optimizado para legibilidad)
@@ -169,6 +174,112 @@ Esta app es un **complemento del sistema web SyServ existente**, no un reemplazo
   duration: 45,
   status: 'confirmed'
 }
+```
+
+**Contenido del Tab "Negocio"**:
+- Header con avatar y descripción del negocio
+- Estadísticas: 4 métricas (citas, clientes, calificación, ingresos)
+- Información de contacto (dirección, teléfono, email, sitio web)
+- Horarios de atención (lun-dom)
+- Servicios ofrecidos (chips interactivos)
+- Animaciones secuenciales por card
+- Tema oscuro completo
+
+#### 6. ✅ Página de Perfil del Negocio
+- **Archivo**: `src/app/features/profile/pages/profile-main/`
+- **Estado**: Completado
+- **Funcionalidad**:
+  - **Header del perfil**:
+    - Avatar del negocio (120px)
+    - Nombre y descripción
+    - Badge de estado (Abierto/Cerrado)
+    - Fondo degradado con animación de patrón
+  - **Estadísticas del negocio**:
+    - Grid 2x2 con métricas clave
+    - Iconos con colores temáticos
+    - Valores numéricos destacados
+  - **Información de contacto**:
+    - Dirección física
+    - Teléfono
+    - Email
+    - Sitio web
+    - Iconos coloridos por tipo de contacto
+  - **Horario de atención**:
+    - Tabla completa lun-dom
+    - Destacado del día actual
+    - Indicador visual de "Cerrado"
+  - **Servicios ofrecidos**:
+    - Grid de chips interactivos
+    - Iconos por tipo de servicio
+    - Hover effects
+  - **Botón de acción**: "Editar Información del Negocio" (preparado)
+  - **Animaciones**: Cards con delays secuenciales (0.1s-0.5s)
+  - **Modo oscuro**: Soporte completo con paleta optimizada
+
+**Datos Mock del Perfil**:
+```typescript
+businessInfo = {
+  name: 'Salón Belleza & Estilo',
+  logo: 'https://via.placeholder.com/150/3B82F6/FFFFFF?text=BE',
+  description: 'Tu salón de confianza con más de 10 años...',
+  address: 'Av. Principal 123, Col. Centro, Ciudad de México',
+  phone: '+52 55 1234 5678',
+  email: 'contacto@bellezaestilo.com',
+  website: 'www.bellezaestilo.com',
+  status: 'Abierto ahora'
+}
+
+stats = [
+  { icon: 'calendar-outline', value: '245', label: 'Citas este mes', color: 'primary' },
+  { icon: 'people-outline', value: '128', label: 'Clientes activos', color: 'secondary' },
+  { icon: 'star-outline', value: '4.8', label: 'Calificación', color: 'warning' },
+  { icon: 'cash-outline', value: '$45K', label: 'Ingresos del mes', color: 'success' }
+]
+```
+
+#### 7. ✅ Página de Configuración
+- **Archivo**: `src/app/features/settings/pages/settings-main/`
+- **Estado**: Completado
+- **Funcionalidad**:
+  - **Apariencia**:
+    - Toggle de modo oscuro (funcional con localStorage)
+    - Aplicación global del tema
+    - Persistencia entre sesiones
+  - **Notificaciones**:
+    - Toggle Push (preparado para integración)
+    - Toggle Email (estático)
+    - Toggle SMS (estático)
+    - Toggle Recordatorios (estático)
+    - Slider de volumen (0-100, persiste en localStorage)
+  - **Idioma**:
+    - Selector con 3 opciones (Español, English, Português)
+    - Persistencia en localStorage
+    - Preparado para i18n
+  - **Almacenamiento**:
+    - Indicador de caché usado (45 MB)
+    - Botón "Limpiar Caché" (simulado)
+    - Botón "Borrar Datos Locales" (preparado)
+  - **Privacidad y Soporte**:
+    - Enlaces a Política de Privacidad (preparado)
+    - Enlaces a Términos de Servicio (preparado)
+    - Contactar Soporte (preparado)
+  - **Información de la App**:
+    - Versión: 1.0.0
+    - Botón "Acerca de" (preparado)
+  - **Navegación**: Botón para volver al menú
+  - **Modo oscuro**: Soporte completo
+
+**Configuraciones Persistentes**:
+```typescript
+localStorage.setItem('darkMode', 'true/false');
+localStorage.setItem('notificationVolume', '0-100');
+localStorage.setItem('selectedLanguage', 'es/en/pt');
+localStorage.setItem('notificationSettings', JSON.stringify({
+  push: true,
+  email: false,
+  sms: true,
+  reminders: true
+}));
 ```
 
 ---
@@ -768,6 +879,87 @@ Convertir los diseños en funcionalidad completa con datos reales.
 
 ## 📝 CHANGELOG
 
+### [2025-11-10] - Implementación Completa de UI Principal y Modo Oscuro
+
+#### Agregado
+- ✅ **Página de Perfil del Negocio** (`src/app/features/profile/pages/profile-main/`)
+  - Header con avatar y descripción del negocio
+  - 4 estadísticas clave (citas, clientes, calificación, ingresos)
+  - Información de contacto completa (dirección, teléfono, email, web)
+  - Horarios de atención con indicador del día actual
+  - Grid de servicios ofrecidos con chips interactivos
+  - Animaciones secuenciales de entrada
+  - Soporte completo de modo oscuro
+
+- ✅ **Página de Configuración** (`src/app/features/settings/pages/settings-main/`)
+  - Toggle de modo oscuro funcional con persistencia
+  - 4 toggles de notificaciones (Push, Email, SMS, Recordatorios) con persistencia
+  - Slider de volumen (0-100) con persistencia en localStorage
+  - Selector de idioma (Español, English, Português) con persistencia
+  - Opciones de almacenamiento (limpiar caché, borrar datos)
+  - Enlaces de privacidad y soporte
+  - Información de la app (versión 1.0.0)
+  - Soporte completo de modo oscuro
+
+- ✅ **Sistema de Modo Oscuro Global**
+  - Implementado en `src/theme/variables.scss` (180+ líneas de estilos)
+  - Aplicación automática en `app.component.ts` al iniciar
+  - Persistencia en localStorage
+  - Soporte en todas las páginas: Home, Agenda, Perfil, Settings
+  - Login forzado a modo claro (protección especial)
+
+- ✅ **Integración de Perfil en Agenda**
+  - Tab "Negocio" en bottom navigation muestra perfil completo
+  - Mismo contenido que la página de perfil standalone
+  - Navegación condicional (muestra banner/header/calendario solo en tab Citas)
+  - +380 líneas de estilos específicos para business content en agenda
+
+#### Modificado
+- ✅ **Menú Principal (Home)**
+  - Mejorado espaciado entre iconos y texto (1.5rem margin-top)
+  - Habilitada navegación a Perfil y Configuración
+  - Agregado soporte completo de modo oscuro
+
+- ✅ **Vista de Agenda**
+  - Agregado contenido de perfil en tab "Negocio"
+  - Optimizado display condicional de elementos según tab activo
+  - Soporte completo de modo oscuro con estilos mejorados
+  - Importados componentes adicionales (IonCard, IonAvatar, IonGrid, IonChip)
+  - Registrados 14 iconos adicionales para el perfil
+
+- ✅ **Login Page**
+  - Protección especial contra modo oscuro
+  - Forzado a modo claro siempre usando `:host-context(body.dark)` overrides
+  - Solución a problema de ViewEncapsulation de Angular
+
+- ✅ **App Component**
+  - Agregado `ngOnInit()` con carga de preferencia de modo oscuro
+  - Aplicación automática del tema al iniciar la app
+
+#### Técnico
+- **Persistencia en localStorage**:
+  - `darkMode`: boolean (tema global)
+  - `notificationVolume`: number 0-100
+  - `selectedLanguage`: string ('es', 'en', 'pt')
+  - `notificationSettings`: objeto JSON con 4 preferencias
+
+- **Nuevas rutas**:
+  - `/profile` → ProfileMainPage
+  - `/settings` → SettingsMainPage
+
+- **Arquitectura de estilos para modo oscuro**:
+  - Estilos globales en `variables.scss` (body.dark)
+  - Estilos por componente usando `:host-context(body.dark)`
+  - Protección especial en login con overrides `!important`
+
+- **Archivos modificados/creados**: 12
+  - Creados: profile-main.page (ts/html/scss), settings-main.page (ts/html/scss)
+  - Modificados: app.component.ts, app.routes.ts, home.page (ts/scss), agenda-main.page (ts/html/scss), login.page.scss, variables.scss
+
+#### Progreso Actualizado
+- **UI/Diseño**: 65% → 85% (+20%)
+- **Lógica de Negocio**: 10% → 15% (+5%)
+
 ### [2025-11-08] - Traducción Completa al Español
 
 #### Modificado
@@ -841,6 +1033,39 @@ Convertir los diseños en funcionalidad completa con datos reales.
 **Decisión actual**: localStorage para tokens (TEMPORAL)
 **Plan futuro**: Migrar a Capacitor SecureStorage
 **Razón**: localStorage no es seguro para tokens JWT en producción
+
+#### 5. Sistema de Modo Oscuro
+**Decisión**: Implementación manual con clase `body.dark`
+**Razón**: Control total sobre el tema, mejor que `prefers-color-scheme`
+**Implementación**:
+- Toggle en Settings aplica/remueve clase `dark` en `<body>`
+- Persistencia en localStorage con clave `darkMode`
+- Carga automática en `app.component.ts` ngOnInit
+- Estilos globales en `variables.scss` (body.dark)
+- Estilos por componente con `:host-context(body.dark)`
+
+**Desafío de ViewEncapsulation**:
+- Angular encapsula estilos por defecto
+- Selector `body.dark` no funciona dentro de componentes
+- **Solución**: Usar `:host-context(body.dark)` que sí atraviesa el shadow DOM
+- **Excepción Login**: Protección especial con overrides `!important` para mantenerlo siempre en claro
+
+**Ejemplo**:
+```scss
+// ❌ NO FUNCIONA en componentes Angular
+body.dark {
+  .my-element {
+    color: white;
+  }
+}
+
+// ✅ FUNCIONA correctamente
+:host-context(body.dark) {
+  .my-element {
+    color: white;
+  }
+}
+```
 
 ---
 
