@@ -1,0 +1,287 @@
+<!-- Header -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="closeModal()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>Agendar Reservacion</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="togglePromo()">
+        <ion-badge [color]="isPromo ? 'success' : 'medium'">Promo</ion-badge>
+      </ion-button>
+      <ion-button [disabled]="!isFormValid()" (click)="saveAppointment()">
+        <ion-icon name="checkmark-outline" [color]="isFormValid() ? 'success' : 'medium'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Fecha y Hora -->
+  <ion-toolbar class="datetime-toolbar">
+    <div class="datetime-container" (click)="openDateTimePicker()">
+      <ion-icon name="calendar-outline" class="datetime-icon"></ion-icon>
+      <span class="datetime-text">{{ selectedDateTime }}</span>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<!-- Content -->
+<ion-content class="appointment-content">
+
+  <!-- Tabs -->
+  <ion-segment [(ngModel)]="activeTab" (ionChange)="onTabChange($event)" class="tabs-segment">
+    <ion-segment-button value="general">
+      <ion-label>General</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="conceptos">
+      <ion-label>Conceptos</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Tab General -->
+  <div class="tab-content" *ngIf="activeTab === 'general'">
+
+    <!-- Botones de Acciones (iconos superiores) -->
+    <div class="action-buttons">
+      <ion-button fill="solid" color="dark" size="small">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="solid" color="dark" size="small">
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="solid" color="medium" size="small">
+        <ion-icon name="person-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="solid" color="medium" size="small">
+        <ion-icon name="document-text-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Cliente -->
+    <div class="form-section">
+      <ion-item class="form-item">
+        <ion-label position="stacked" class="required-label">*Cliente:</ion-label>
+        <ion-searchbar
+          [(ngModel)]="clientSearchQuery"
+          (ionInput)="searchClients($event)"
+          placeholder="-- Seleccione --"
+          [debounce]="300"
+          class="client-searchbar">
+        </ion-searchbar>
+      </ion-item>
+
+      <!-- Resultados de búsqueda -->
+      <ion-list *ngIf="clientResults.length > 0" class="search-results">
+        <ion-item
+          button
+          *ngFor="let client of clientResults"
+          (click)="selectClient(client)"
+          class="search-result-item">
+          <ion-label>
+            <h3>{{ client.name }}</h3>
+            <p *ngIf="client.phone">{{ client.phone }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Personal -->
+    <div class="form-section">
+      <ion-item class="form-item">
+        <ion-label position="stacked" class="required-label">*Personal:</ion-label>
+        <ion-select
+          [(ngModel)]="selectedStaffId"
+          placeholder="Seleccione personal"
+          interface="action-sheet"
+          class="staff-select">
+          <ion-select-option *ngFor="let staff of staffList" [value]="staff.id">
+            {{ staff.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <!-- Mensaje vacío -->
+    <div class="empty-message" *ngIf="addedServices.length === 0">
+      <p>* No existen resultados para mostrar.</p>
+    </div>
+
+    <!-- Resumen de servicios agregados (si hay) -->
+    <div class="services-summary" *ngIf="addedServices.length > 0">
+      <h3 class="summary-title">Servicios agregados:</h3>
+      <ion-list class="summary-list">
+        <ion-item *ngFor="let service of addedServices" class="summary-item">
+          <ion-label>
+            <h3>{{ service.serviceName }}</h3>
+            <p>Cantidad: {{ service.quantity }} | Duración: {{ service.duration }} min</p>
+          </ion-label>
+          <ion-button slot="end" fill="clear" (click)="removeService(service)">
+            <ion-icon name="trash-outline" color="danger"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <!-- Totales -->
+      <div class="totals">
+        <p><strong>Duración total:</strong> {{ totalDuration }} minutos</p>
+        <p><strong>Precio total:</strong> ${{ totalPrice }}</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab Conceptos -->
+  <div class="tab-content" *ngIf="activeTab === 'conceptos'">
+
+    <!-- Servicio (Nombre) -->
+    <div class="form-section">
+      <ion-item class="form-item">
+        <ion-label position="stacked">Nombre:</ion-label>
+        <ion-select
+          [(ngModel)]="selectedServiceId"
+          placeholder="Seleccione servicio"
+          interface="action-sheet"
+          class="service-select">
+          <ion-select-option *ngFor="let service of services" [value]="service.id">
+            {{ service.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <!-- Cantidad y Duración -->
+    <ion-grid class="quantity-duration-grid">
+      <ion-row>
+        <ion-col size="6">
+          <ion-item class="form-item">
+            <ion-label position="stacked">Cantidad:</ion-label>
+            <ion-input
+              type="number"
+              [(ngModel)]="serviceQuantity"
+              [min]="1"
+              [max]="10"
+              class="quantity-input">
+            </ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="6">
+          <ion-item class="form-item">
+            <ion-label position="stacked">Duración:</ion-label>
+            <ion-select
+              [(ngModel)]="serviceDuration"
+              interface="action-sheet"
+              class="duration-select">
+              <ion-select-option *ngFor="let option of durationOptions" [value]="option.value">
+                {{ option.label }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <!-- Botón Agregar -->
+    <div class="add-button-container">
+      <ion-button
+        expand="block"
+        fill="solid"
+        color="medium"
+        [disabled]="!selectedServiceId"
+        (click)="addService()"
+        class="add-service-button">
+        Agregar
+      </ion-button>
+    </div>
+
+    <!-- Lista de servicios agregados -->
+    <div class="added-services-section">
+      <h3 class="section-title" *ngIf="addedServices.length > 0">Servicios agregados:</h3>
+
+      <ion-list *ngIf="addedServices.length > 0" class="added-services-list">
+        <ion-item *ngFor="let service of addedServices" class="added-service-item">
+          <ion-label>
+            <h3>{{ service.serviceName }}</h3>
+            <p>Cantidad: {{ service.quantity }} | Duración: {{ service.duration }} min | Precio: ${{ service.price }}</p>
+          </ion-label>
+          <ion-button slot="end" fill="clear" (click)="removeService(service)">
+            <ion-icon name="trash-outline" color="danger"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <!-- Mensaje vacío -->
+      <div class="empty-message" *ngIf="addedServices.length === 0">
+        <p>* No existen resultados para mostrar.</p>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>
+
+<!-- Footer con botones -->
+<ion-footer>
+  <ion-toolbar>
+    <ion-grid class="footer-buttons">
+      <ion-row>
+        <ion-col size="6">
+          <ion-button
+            expand="block"
+            color="success"
+            [disabled]="!isFormValid()"
+            (click)="saveAppointment()"
+            class="save-button">
+            AGENDAR CITA
+          </ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button
+            expand="block"
+            color="dark"
+            (click)="closeModal()"
+            class="cancel-button">
+            <ion-icon name="close-outline" slot="start"></ion-icon>
+            Cerrar
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>
+
+<!-- Modal de selector de fecha/hora -->
+<ion-modal [isOpen]="showDateTimePicker" (didDismiss)="closeDateTimePicker()" [backdropDismiss]="false">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Seleccionar Fecha y Hora</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-datetime
+        #datetime
+        [(ngModel)]="tempDateTime"
+        [preferWheel]="false"
+        [min]="minDate"
+        [hourValues]="hourValues"
+        [minuteValues]="minuteValues"
+        [hourCycle]="'h12'"
+        locale="es-MX"
+        size="cover">
+      </ion-datetime>
+
+      <!-- Botones de confirmación -->
+      <div class="datetime-buttons">
+        <ion-button expand="block" color="medium" (click)="cancelDateTime()">
+          Cancelar
+        </ion-button>
+        <ion-button expand="block" color="primary" (click)="confirmDateTime()">
+          Confirmar
+        </ion-button>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

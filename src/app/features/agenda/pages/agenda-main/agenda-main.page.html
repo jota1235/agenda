@@ -184,26 +184,25 @@
   <div class="timeline-container" *ngIf="activeTab === 'appointments'">
     <div class="timeline-content">
 
-      <!-- Líneas de hora -->
+      <!-- Líneas de tiempo cada 30 minutos -->
       <div class="time-slot" *ngFor="let slot of timeSlots; let i = index">
         <div class="time-label">
-          <span class="hour">{{ slot.hour.split(' ')[0] }}</span>
-          <span class="period">{{ slot.hour.split(' ')[1] }}</span>
+          <span class="hour">{{ slot.displayTime }}</span>
+          <span class="period">{{ slot.period }}</span>
         </div>
 
         <div class="time-grid">
-          <!-- Slots de 15 minutos -->
+          <!-- Slot de 30 minutos -->
           <div
             class="grid-slot"
-            *ngFor="let gridSlot of slot.slots"
-            [class.has-appointment]="!gridSlot.isEmpty"
+            [class.has-appointment]="!slot.isEmpty"
           >
             <!-- Cita (si existe) -->
-            <div class="appointment-card" *ngIf="!gridSlot.isEmpty && gridSlot.appointment">
-              <div class="appointment-time">{{ slot.hour.split(' ')[0] }}:{{ gridSlot.time }}</div>
-              <div class="appointment-client">{{ gridSlot.appointment.clientName }}</div>
-              <div class="appointment-service">{{ gridSlot.appointment.service }}</div>
-              <div class="appointment-duration">{{ gridSlot.appointment.duration }} min</div>
+            <div class="appointment-card" *ngIf="!slot.isEmpty && slot.appointment">
+              <div class="appointment-time">{{ slot.displayTime }} {{ slot.period }}</div>
+              <div class="appointment-client">{{ slot.appointment.clientName }}</div>
+              <div class="appointment-service">{{ slot.appointment.service }}</div>
+              <div class="appointment-duration">{{ slot.appointment.duration }} min</div>
             </div>
           </div>
         </div>

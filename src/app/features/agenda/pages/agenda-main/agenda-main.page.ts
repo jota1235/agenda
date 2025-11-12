@@ -25,6 +25,7 @@ import {
   ModalController
 } from '@ionic/angular/standalone';
 import { CalendarModalComponent, CalendarModalResult } from '../../components/calendar-modal/calendar-modal.component';
+import { AppointmentFormComponent, AppointmentFormData } from '../../components/appointment-form/appointment-form.component';
 import { addIcons } from 'ionicons';
 import {
   notificationsOutline,
@@ -55,8 +56,11 @@ import {
 } from 'ionicons/icons';
 
 interface TimeSlot {
-  hour: string;
-  slots: { time: string; isEmpty: boolean; appointment?: any }[];
+  time: string;
+  displayTime: string;
+  period: string;
+  isEmpty: boolean;
+  appointment?: any;
 }
 
 interface DayOption {
@@ -222,43 +226,64 @@ export class AgendaMainPage implements OnInit {
   }
 
   /**
-   * Generar slots de tiempo para el timeline
+   * Generar slots de tiempo para el timeline (cada 30 minutos)
    */
   generateTimeSlots() {
-    const hours = ['9', '10', '11', '12', '1', '2', '3', '4', '5', '6', '7'];
-    const periods = ['a.m.', 'a.m.', 'a.m.', 'p.m.', 'p.m.', 'p.m.', 'p.m.', 'p.m.', 'p.m.', 'p.m.', 'p.m.'];
+    this.timeSlots = [];
 
-    this.timeSlots = hours.map((hour, index) => {
-      return {
-        hour: `${hour} ${periods[index]}`,
-        slots: [
-          { time: '00', isEmpty: true },
-          { time: '15', isEmpty: true },
-          { time: '30', isEmpty: true },
-          { time: '45', isEmpty: true }
-        ]
-      };
+    // Definir las horas y sus períodos
+    const schedule = [
+      { hour: 9, minute: 0, period: 'a.m.' },
+      { hour: 9, minute: 30, period: 'a.m.' },
+      { hour: 10, minute: 0, period: 'a.m.' },
+      { hour: 10, minute: 30, period: 'a.m.' },
+      { hour: 11, minute: 0, period: 'a.m.' },
+      { hour: 11, minute: 30, period: 'a.m.' },
+      { hour: 12, minute: 0, period: 'p.m.' },
+      { hour: 12, minute: 30, period: 'p.m.' },
+      { hour: 1, minute: 0, period: 'p.m.' },
+      { hour: 1, minute: 30, period: 'p.m.' },
+      { hour: 2, minute: 0, period: 'p.m.' },
+      { hour: 2, minute: 30, period: 'p.m.' },
+      { hour: 3, minute: 0, period: 'p.m.' },
+      { hour: 3, minute: 30, period: 'p.m.' },
+      { hour: 4, minute: 0, period: 'p.m.' },
+      { hour: 4, minute: 30, period: 'p.m.' },
+      { hour: 5, minute: 0, period: 'p.m.' },
+      { hour: 5, minute: 30, period: 'p.m.' },
+      { hour: 6, minute: 0, period: 'p.m.' },
+      { hour: 6, minute: 30, period: 'p.m.' },
+      { hour: 7, minute: 0, period: 'p.m.' },
+      { hour: 7, minute: 30, period: 'p.m.' }
+    ];
+
+    // Crear un slot para cada período de 30 minutos
+    schedule.forEach(slot => {
+      const minuteStr = slot.minute === 0 ? '00' : '30';
+      this.timeSlots.push({
+        time: `${slot.hour}:${minuteStr}`,
+        displayTime: `${slot.hour}:${minuteStr}`,
+        period: slot.period,
+        isEmpty: true
+      });
     });
 
-    // Agregar una cita de ejemplo en 9:15 a.m. (45 min = 3 slots)
-    if (this.timeSlots[0]) {
-      // Marcar los 3 slots como ocupados (9:15, 9:30, 9:45)
-      this.timeSlots[0].slots[1] = {
-        time: '15',
+    // Agregar una cita de ejemplo en 9:00 a.m. (60 min = 2 slots)
+    if (this.timeSlots.length >= 2) {
+      // Slot 9:00 a.m.
+      this.timeSlots[0] = {
+        ...this.timeSlots[0],
         isEmpty: false,
         appointment: {
           clientName: 'Juan Pérez',
           service: 'Corte de Cabello',
-          duration: 45,
+          duration: 60,
           status: 'confirmed'
         }
       };
-      this.timeSlots[0].slots[2] = {
-        time: '30',
-        isEmpty: false
-      };
-      this.timeSlots[0].slots[3] = {
-        time: '45',
+      // Slot 9:30 a.m. (segunda parte de la cita)
+      this.timeSlots[1] = {
+        ...this.timeSlots[1],
         isEmpty: false
       };
     }
@@ -446,9 +471,30 @@ export class AgendaMainPage implements OnInit {
   /**
    * Crear nueva cita
    */
-  createAppointment() {
-    console.log('Crear nueva cita');
-    // TODO: Navegar a formulario de nueva cita
+  async createAppointment() {
+    const modal = await this.modalController.create({
+      component: AppointmentFormComponent,
+      cssClass: 'appointment-form-modal',
+      componentProps: {
+        date: this.selectedDate,
+        mode: 'create'
+      },
+      backdropDismiss: false
+    });
+
+    await modal.present();
+
+    // Esperar a que se cierre el modal
+    const { data, role } = await modal.onWillDismiss<AppointmentFormData>();
+
+    if (role === 'confirm' && data) {
+      console.log('Cita guardada:', data);
+      // TODO: Recargar citas del día desde la base de datos
+      // await this.loadAppointmentsForDate(this.selectedDate);
+
+      // Por ahora regeneramos el timeline para mostrar feedback visual
+      this.generateTimeSlots();
+    }
   }
 
   /**
